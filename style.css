@@ -343,7 +343,6 @@
   }
   .toc-group:last-child { border-bottom: none; }
   
-  /* 编级标题 */
   .toc-pian {
     display: flex;
     align-items: baseline;
@@ -375,7 +374,6 @@
   
   .toc-title { flex: 1; }
   
-  /* 条目级列表 */
   .toc-list {
     list-style: none;
     margin: 3px 0 0;
@@ -461,10 +459,9 @@
     margin-bottom: 12px;
     box-shadow: var(--shadow-sm);
     transition: border-color .25s, box-shadow .25s;
-    scroll-margin-top: 0; /* 交给 html 的 scroll-padding-top 处理 */
+    scroll-margin-top: 0;
   }
   
-  /* 从目录跳转过来时短暂高亮 */
   .clause.is-target,
   .pian.is-target > .pian-head h2 {
     animation: target-flash 1.6s ease;
@@ -594,7 +591,10 @@
     letter-spacing: .5px;
   }
   
-  /* ---------- 页脚 ---------- */
+  /* ==========================================================================
+     页脚
+     ========================================================================== */
+  
   footer {
     margin-top: 52px;
     padding-top: 26px;
@@ -617,12 +617,20 @@
     justify-content: center;
     gap: 8px 14px;
   }
-  footer .fmeta span::before {
+  
+  footer .fmeta > *::before {
     content: "·";
     margin-right: 14px;
     color: var(--line);
   }
-  footer .fmeta span:first-child::before { display: none; }
+  footer .fmeta > *:first-child::before { display: none; }
+  
+  footer .fmeta a {
+    color: var(--text-2);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--line);
+    transition: color .18s, border-color .18s;
+  }
   
   /* ---------- 回到顶部 ---------- */
   #toTop {
@@ -748,6 +756,11 @@
     }
     #toTop:hover { color: var(--accent); border-color: var(--accent); }
     .lb-btn:hover { background: rgba(255,255,255,.22); }
+  
+    footer .fmeta a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
   
     .gallery-item:hover {
       transform: translateY(-3px);
