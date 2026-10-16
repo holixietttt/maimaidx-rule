@@ -6,6 +6,8 @@
 <meta name="description" content="舞萌DX机台游玩公约 · 玩家社区自律版，非官方规定，不具法律约束力。">
 <meta name="theme-color" content="#f3f4f8" id="themeColor">
 <title>舞萌DX机台游玩公约</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
 
 <script>
   (function () {
@@ -324,8 +326,8 @@
       </figure>
 
       <figure class="gallery-item">
-        <img class="gallery-img" src="images/photo-02.jpg" alt="联机时刻" loading="lazy" decoding="async">
-        <figcaption>联机时刻</figcaption>
+        <img class="gallery-img" src="World-Link-2-rin.png" alt="Wl2-rin" loading="lazy" decoding="async">
+        <figcaption>Wl2-rin</figcaption>
       </figure>
 
       <figure class="gallery-item">
@@ -360,7 +362,7 @@
     <div class="fmeta">
       <span>玩家社区自律版</span>
       <span>第一版 · 试行</span>
-      <span>欢迎提出修改建议</span>
+      <a href="https://docs.qq.com/form/page/DWHVNVGxPa21LQVFs" target="_blank" rel="noopener noreferrer">欢迎提出修改建议</a>
     </div>
   </footer>
 
@@ -423,9 +425,6 @@
 
   /* ==========================================================================
      目录自动生成
-     - 遍历每个 .pian，取其 Part 标记和 h2 标题作为编级入口
-     - 遍历每编下的 .clause，取其 .num（第X条）和 .cap（【标题】）作为条目级入口
-     - 自动为编与条款补上 id，用于跳转
      ========================================================================== */
   function buildTOC() {
     var tocEl = document.getElementById('toc');
@@ -485,7 +484,6 @@
 
     tocEl.innerHTML = headHtml + groupsHtml + '</div>';
 
-    /* 折叠 / 展开 */
     var toggleBtn = document.getElementById('tocToggle');
     var tocBody = document.getElementById('tocBody');
     if (toggleBtn && tocBody) {
@@ -503,7 +501,6 @@
       });
     }
 
-    /* 从目录跳转后，目标闪一下高亮 */
     tocEl.addEventListener('click', function (e) {
       var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
       if (!a) return;
@@ -517,7 +514,6 @@
       function flash(el) {
         if (!el) return;
         el.classList.remove('is-target');
-        // 强制 reflow，让动画能重复触发
         void el.offsetWidth;
         el.classList.add('is-target');
         setTimeout(function () { el.classList.remove('is-target'); }, 1800);
