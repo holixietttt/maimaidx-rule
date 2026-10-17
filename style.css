@@ -1,6 +1,6 @@
 /* ==========================================================================
    舞萌DX机台游玩公约
-   样式表 style.css（含目录 / 相册 / 灯箱 / 本地音乐播放器）
+   样式表 style.css（含相册轮播 / 音乐轮播 / 灯箱 / 播放器）
    ========================================================================== */
 
 /* ---------- 主题变量 ---------- */
@@ -541,13 +541,107 @@ body::before {
 }
 
 /* ==========================================================================
-   相册
+   通用轮播组件
+   ========================================================================== */
+
+.carousel-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-page {
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+/* 翻页按钮（鼠标靠近自身时显示） */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+  transition: all .25s ease;
+  
+  opacity: 0;
+  visibility: visible; 
+  pointer-events: auto;
+}
+
+.carousel-btn:hover {
+  opacity: 1;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev { left: -38px; }
+.carousel-btn.next { right: -38px; }
+
+@media (max-width: 960px) {
+  .carousel-btn.prev { left: -18px; }
+  .carousel-btn.next { right: -18px; }
+}
+
+@media (max-width: 720px) {
+  .carousel-btn { display: none !important; }
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.carousel-dot.active {
+  background: var(--accent);
+  transform: scale(1.2);
+}
+
+/* ==========================================================================
+   相册专用（桌面端 3 列，手机端 2 列）
    ========================================================================== */
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
 }
 
 .gallery-item {
@@ -577,7 +671,7 @@ body::before {
   right: 0;
   bottom: 0;
   padding: 26px 12px 9px;
-  font-size: 12px;
+  font-size: 13px; /* 略微放大 */
   color: #fff;
   letter-spacing: .2px;
   background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,0));
@@ -601,13 +695,20 @@ body::before {
 }
 
 /* ==========================================================================
-   本地音乐列表（专辑网格）
+   音乐专用（桌面端 2 列，手机端 1 列）
    ========================================================================== */
 
-.music-grid {
+.music-page .music-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .music-page .music-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 .music-card {
@@ -617,7 +718,7 @@ body::before {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 10px;
+  padding: 12px 10px; /* 稍微增加一点内边距 */
   cursor: pointer;
   transition: transform .2s, border-color .2s, box-shadow .2s;
   user-select: none;
@@ -635,8 +736,8 @@ body::before {
 }
 
 .music-cover {
-  width: 56px;
-  height: 56px;
+  width: 60px; /* 略微放大 */
+  height: 60px;
   border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
@@ -650,7 +751,7 @@ body::before {
 }
 
 .music-title {
-  font-size: 13.5px;
+  font-size: 14.5px; /* 放大 */
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
@@ -659,7 +760,7 @@ body::before {
 }
 
 .music-desc {
-  font-size: 11.5px;
+  font-size: 12.5px; /* 放大 */
   color: var(--text-3);
   white-space: nowrap;
   overflow: hidden;
@@ -672,8 +773,8 @@ body::before {
 }
 
 .music-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px; /* 放大 */
+  height: 22px;
   flex-shrink: 0;
   color: var(--text-3);
   transition: color .2s;
@@ -685,7 +786,7 @@ body::before {
 }
 
 /* ==========================================================================
-   底部全局音乐播放器 (Mini Player)
+   底部全局音乐播放器
    ========================================================================== */
 
 .player-bar {
@@ -836,7 +937,7 @@ body::before {
   background: rgba(255, 77, 79, 0.1);
 }
 
-/* ---------- 音量控制 ---------- */
+/* 音量控制 */
 .volume-wrap {
   display: flex;
   align-items: center;
@@ -871,7 +972,6 @@ body::before {
   transform: scale(1.2);
 }
 
-/* 音量百分比文字 */
 .volume-text {
   font-size: 11px;
   color: var(--text-3);
@@ -880,13 +980,12 @@ body::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* 音量图标样式 */
 .volume-btn svg { width: 18px; height: 18px; }
 .volume-btn .icon-muted { display: none; }
 .volume-btn.is-muted .icon-volume { display: none; }
 .volume-btn.is-muted .icon-muted { display: block; }
 
-/* ---------- 迷你悬浮播放球 ---------- */
+/* 迷你悬浮播放球 */
 .mini-player {
   position: fixed;
   right: calc(18px + env(safe-area-inset-right));
@@ -919,7 +1018,7 @@ body::before {
   transform: scale(1.05) translateY(0);
 }
 
-/* ---------- 回到顶部 ---------- */
+/* 回到顶部 */
 #toTop {
   position: fixed;
   right: calc(18px + env(safe-area-inset-right));
@@ -942,7 +1041,6 @@ body::before {
 }
 #toTop.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-/* 当播放栏展开时，把回顶按钮往上顶，给迷你球让位 */
 body.player-active #toTop {
   bottom: calc(90px + env(safe-area-inset-bottom));
 }
@@ -1128,9 +1226,7 @@ footer .fmeta a:visited {
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 720px) {
-  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .toc-body { grid-template-columns: 1fr; column-gap: 0; }
-  .music-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
@@ -1150,32 +1246,26 @@ footer .fmeta a:visited {
   .toc-list a { font-size: 12px; }
 
   .gallery-item { border-radius: 12px; }
-  .gallery-item figcaption { font-size: 11.5px; }
+  .gallery-item figcaption { font-size: 12px; }
 
   .lb-btn { width: 40px; height: 40px; }
   .lb-prev { left: 8px; }
   .lb-next { right: 8px; }
   .lb-close { top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); }
 
-  /* === 移动端播放栏彻底重构（绝对定位方案） === */
-  
-  /* 隐藏音量图标，留给播放进度条 */
+  /* === 移动端播放栏绝对定位方案 === */
   .volume-wrap { display: none; }
-
+  
   .player-inner {
     position: relative;
-    padding-bottom: 24px; /* 在底部留出进度条的空间 */
+    padding-bottom: 24px; 
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  .player-cover {
-    width: 40px;
-    height: 40px;
-  }
+  .player-cover { width: 40px; height: 40px; }
 
-  /* 进度条脱离文档流，绝对固定在整条播放器的最底部 */
   .player-progress-wrap {
     position: absolute;
     bottom: 0;
@@ -1184,12 +1274,8 @@ footer .fmeta a:visited {
     margin-top: 0;
   }
 
-  .player-time {
-    font-size: 10px;
-    width: 32px;
-  }
+  .player-time { font-size: 10px; width: 32px; }
 
-  /* 按钮稍微紧凑一点 */
   .player-controls { gap: 2px; }
   .player-btn { padding: 4px; }
   .player-btn.play-btn {
@@ -1206,7 +1292,7 @@ footer .fmeta a:visited {
     --line: #ccc; --shadow: none; --shadow-sm: none;
   }
   body::before { display: none; }
-  .topbar, #toTop, .stats, .lightbox, .toc-toggle, .player-bar, .mini-player { display: none !important; }
+  .topbar, #toTop, .stats, .lightbox, .toc-toggle, .player-bar, .mini-player, .carousel-btn, .carousel-dots { display: none !important; }
   .clause, .gallery-item, .music-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ddd; }
   .hero h1 { -webkit-text-fill-color: #000; color: #000; }
   a { text-decoration: none; color: #000; }
