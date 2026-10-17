@@ -771,7 +771,6 @@ body::before {
   outline: none;
   cursor: pointer;
   position: relative;
-  /* 防止移动端拖动进度条时触发页面滚动 */
   touch-action: none;
 }
 
@@ -1158,54 +1157,41 @@ footer .fmeta a:visited {
   .lb-next { right: 8px; }
   .lb-close { top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); }
 
-  /* === 移动端播放栏重新排版 === */
+  /* === 移动端播放栏彻底重构（绝对定位方案） === */
   
-  /* 隐藏音量图标，因为手机有实体音量键，给进度条和按钮让位 */
+  /* 隐藏音量图标，留给播放进度条 */
   .volume-wrap { display: none; }
 
-  /* 核心改造：将播放栏变成上下两行的 Grid 布局 */
   .player-inner {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto auto;
-    gap: 6px 10px;
+    position: relative;
+    padding-bottom: 24px; /* 在底部留出进度条的空间 */
+    display: flex;
     align-items: center;
+    gap: 10px;
   }
 
   .player-cover {
-    grid-column: 1;
-    grid-row: 1;
     width: 40px;
     height: 40px;
   }
 
-  .player-info {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .player-controls {
-    grid-column: 3;
-    grid-row: 1;
-    gap: 2px; /* 按钮之间靠紧一点 */
-  }
-
-  /* 进度条占据第二行，横跨整个屏幕宽度 */
+  /* 进度条脱离文档流，绝对固定在整条播放器的最底部 */
   .player-progress-wrap {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-top: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 0;
   }
 
   .player-time {
-    width: 32px; /* 缩小时间文字宽度 */
     font-size: 10px;
+    width: 32px;
   }
 
-  .player-btn {
-    padding: 4px;
-  }
-
+  /* 按钮稍微紧凑一点 */
+  .player-controls { gap: 2px; }
+  .player-btn { padding: 4px; }
   .player-btn.play-btn {
     width: 34px;
     height: 34px;
