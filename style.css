@@ -1,6 +1,6 @@
 /* ==========================================================================
    舞萌DX机台游玩公约
-   样式表 style.css（含目录 / 相册 / 灯箱 / 前言超链接主题色）
+   样式表 style.css（含目录 / 相册 / 灯箱 / 本地音乐播放器）
    ========================================================================== */
 
 /* ---------- 主题变量 ---------- */
@@ -251,7 +251,6 @@ body::before {
   font-weight: 700;
 }
 
-/* 前言中的外部链接（如镜音铃） */
 .notice a,
 .notice a:link,
 .notice a:visited {
@@ -602,46 +601,321 @@ body::before {
 }
 
 /* ==========================================================================
-   页脚
+   本地音乐列表（专辑网格）
    ========================================================================== */
 
-footer {
-  margin-top: 52px;
-  padding-top: 26px;
-  border-top: 1px solid var(--line);
-  text-align: center;
+.music-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.music-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  cursor: pointer;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+  user-select: none;
+}
+
+.music-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.music-card.playing {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.music-cover {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+}
+
+.music-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.music-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-desc {
+  font-size: 11.5px;
   color: var(--text-3);
-  font-size: 12.5px;
-  line-height: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
 }
-footer .fnote {
-  max-width: 560px;
-  margin: 0 auto 14px;
-  color: var(--text-2);
-  font-size: 13px;
-  line-height: 1.9;
+
+.music-card.playing .music-title {
+  color: var(--accent-text);
 }
-footer .fmeta {
-  display: inline-flex;
-  flex-wrap: wrap;
+
+.music-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: color .2s;
+}
+
+.music-card:hover .music-icon,
+.music-card.playing .music-icon {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   底部全局音乐播放器 (Mini Player)
+   ========================================================================== */
+
+.player-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 20px rgba(0,0,0,.05);
+  padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.player-bar.show {
+  transform: translateY(0);
+}
+
+.player-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.player-cover {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  gap: 8px 14px;
 }
 
-footer .fmeta > *::before {
-  content: "·";
-  margin-right: 14px;
-  color: var(--line);
+.player-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-footer .fmeta > *:first-child::before { display: none; }
 
-footer .fmeta a,
-footer .fmeta a:link,
-footer .fmeta a:visited {
+.player-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.player-time {
+  font-size: 11px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  width: 36px;
+}
+
+.player-time.right { text-align: right; }
+
+.player-progress {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.player-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--card);
+  transition: transform .15s;
+}
+
+.player-progress::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.player-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
   color: var(--text-2);
-  text-decoration: none;
-  border-bottom: 1px dashed var(--line);
-  transition: color .18s, border-color .18s;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: color .2s, background .2s;
+}
+
+.player-btn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.player-btn.play-btn {
+  width: 38px;
+  height: 38px;
+  background: var(--accent);
+  color: #fff;
+  margin: 0 4px;
+}
+
+.player-btn.play-btn:hover {
+  background: var(--accent-text);
+  transform: scale(1.05);
+}
+
+.player-btn.close-btn {
+  margin-left: 4px;
+  color: var(--text-3);
+}
+.player-btn.close-btn:hover {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+}
+
+/* ---------- 音量控制 ---------- */
+.volume-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+}
+
+.volume-slider {
+  width: 50px; /* 稍微缩短给百分比留空间 */
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-2);
+  cursor: pointer;
+  transition: transform .15s, background .2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  background: var(--accent);
+  transform: scale(1.2);
+}
+
+/* 音量百分比文字 */
+.volume-text {
+  font-size: 11px;
+  color: var(--text-3);
+  width: 28px; /* 固定宽度避免抖动 */
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 音量图标样式 */
+.volume-btn svg { width: 18px; height: 18px; }
+.volume-btn .icon-muted { display: none; }
+.volume-btn.is-muted .icon-volume { display: none; }
+.volume-btn.is-muted .icon-muted { display: block; }
+
+/* ---------- 迷你悬浮播放球 ---------- */
+.mini-player {
+  position: fixed;
+  right: calc(18px + env(safe-area-inset-right));
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 80;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8) translateY(10px);
+  transition: opacity .3s, transform .3s, visibility .3s, background .2s;
+}
+
+.mini-player.show {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateY(0);
+}
+
+.mini-player:hover {
+  background: var(--accent-text);
+  transform: scale(1.05) translateY(0);
 }
 
 /* ---------- 回到顶部 ---------- */
@@ -662,10 +936,15 @@ footer .fmeta a:visited {
   opacity: 0;
   visibility: hidden;
   transform: translateY(12px);
-  transition: opacity .25s, transform .25s, visibility .25s, color .2s, border-color .2s;
+  transition: opacity .25s, transform .25s, visibility .25s, color .2s, border-color .2s, bottom .3s;
   z-index: 60;
 }
 #toTop.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* 当播放栏展开时，把回顶按钮往上顶，给迷你球让位 */
+body.player-active #toTop {
+  bottom: calc(90px + env(safe-area-inset-bottom));
+}
 
 /* ==========================================================================
    灯箱
@@ -755,6 +1034,52 @@ footer .fmeta a:visited {
   background: rgba(255,255,255,.09);
 }
 
+/* ==========================================================================
+   页脚
+   ========================================================================== */
+
+footer {
+  margin-top: 52px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  color: var(--text-3);
+  font-size: 12.5px;
+  line-height: 2;
+}
+footer .fnote {
+  max-width: 560px;
+  margin: 0 auto 14px;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+footer .fmeta {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+footer .fmeta > *::before {
+  content: "·";
+  margin-right: 14px;
+  color: var(--line);
+}
+footer .fmeta > *:first-child::before { display: none; }
+
+footer .fmeta a,
+footer .fmeta a:link,
+footer .fmeta a:visited {
+  color: var(--text-2);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--line);
+  transition: color .18s, border-color .18s;
+}
+
 /* ---------- Hover（仅鼠标设备） ---------- */
 @media (hover: hover) and (pointer: fine) {
   .nav a:hover { background: var(--card-2); color: var(--text); }
@@ -792,7 +1117,6 @@ footer .fmeta a:visited {
   }
 }
 
-/* 触屏设备：常显说明 */
 @media (hover: none) {
   .gallery-item figcaption {
     opacity: 1;
@@ -805,6 +1129,7 @@ footer .fmeta a:visited {
 @media (max-width: 720px) {
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .toc-body { grid-template-columns: 1fr; column-gap: 0; }
+  .music-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
@@ -830,6 +1155,11 @@ footer .fmeta a:visited {
   .lb-prev { left: 8px; }
   .lb-next { right: 8px; }
   .lb-close { top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); }
+
+  /* 手机端隐藏音量滑块和文字，节省空间 */
+  .volume-slider { display: none; }
+  .volume-text { display: none; }
+  .volume-wrap { margin-right: 2px; }
 }
 
 /* ---------- 打印 ---------- */
@@ -839,8 +1169,8 @@ footer .fmeta a:visited {
     --line: #ccc; --shadow: none; --shadow-sm: none;
   }
   body::before { display: none; }
-  .topbar, #toTop, .stats, .lightbox, .toc-toggle { display: none !important; }
-  .clause, .gallery-item { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ddd; }
+  .topbar, #toTop, .stats, .lightbox, .toc-toggle, .player-bar, .mini-player { display: none !important; }
+  .clause, .gallery-item, .music-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ddd; }
   .hero h1 { -webkit-text-fill-color: #000; color: #000; }
   a { text-decoration: none; color: #000; }
   .gallery-item figcaption {
