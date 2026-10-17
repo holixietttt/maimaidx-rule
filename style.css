@@ -771,6 +771,8 @@ body::before {
   outline: none;
   cursor: pointer;
   position: relative;
+  /* 防止移动端拖动进度条时触发页面滚动 */
+  touch-action: none;
 }
 
 .player-progress::-webkit-slider-thumb {
@@ -844,7 +846,7 @@ body::before {
 }
 
 .volume-slider {
-  width: 50px; /* 稍微缩短给百分比留空间 */
+  width: 50px;
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
@@ -874,7 +876,7 @@ body::before {
 .volume-text {
   font-size: 11px;
   color: var(--text-3);
-  width: 28px; /* 固定宽度避免抖动 */
+  width: 28px;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
@@ -1156,10 +1158,59 @@ footer .fmeta a:visited {
   .lb-next { right: 8px; }
   .lb-close { top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); }
 
-  /* 手机端隐藏音量滑块和文字，节省空间 */
-  .volume-slider { display: none; }
-  .volume-text { display: none; }
-  .volume-wrap { margin-right: 2px; }
+  /* === 移动端播放栏重新排版 === */
+  
+  /* 隐藏音量图标，因为手机有实体音量键，给进度条和按钮让位 */
+  .volume-wrap { display: none; }
+
+  /* 核心改造：将播放栏变成上下两行的 Grid 布局 */
+  .player-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 6px 10px;
+    align-items: center;
+  }
+
+  .player-cover {
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+  }
+
+  .player-info {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .player-controls {
+    grid-column: 3;
+    grid-row: 1;
+    gap: 2px; /* 按钮之间靠紧一点 */
+  }
+
+  /* 进度条占据第二行，横跨整个屏幕宽度 */
+  .player-progress-wrap {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 2px;
+  }
+
+  .player-time {
+    width: 32px; /* 缩小时间文字宽度 */
+    font-size: 10px;
+  }
+
+  .player-btn {
+    padding: 4px;
+  }
+
+  .player-btn.play-btn {
+    width: 34px;
+    height: 34px;
+    margin: 0 2px;
+  }
 }
 
 /* ---------- 打印 ---------- */
